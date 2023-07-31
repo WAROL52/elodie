@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// model model {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+model Emails {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email    String   @unique
+  token    String?
+  role     String?
+  isAdmin  Boolean? @default(false)
+  password String
+  User     Users?
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email   Emails @relation(fields: [emailId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  emailId Int    @unique
+
+  firstname                   String
+  lastname                    String
+  birthday                    DateTime?
+  adresse                     String?
+  phone                       String?
+  description                 String?
+  avatar                      Bytes?
+  isOnline                    Boolean?                @default(false)
+  onlineAt                    DateTime                @default(now())
+  Taches                      Taches[]
+  MessagesSended              Messages[]              @relation(name: "MessagesSended")
+  MessagesReceived            Messages[]              @relation(name: "MessagesReceived")
+  NotificationsTypeSubscrived NotificationsSettings[]
+  Folder                      Folder[]
+  Files                       Files[]
+  Notifications               Notifications[]
+  Historiques                 Historiques[]
+}
+
+model Taches {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+
+  startAt   DateTime?
+  endAt     DateTime?
+  priority  Int       @default(0)
+  completed Boolean   @default(false)
+
+  UserOwner   Users @relation(fields: [UserOwnerId], references: [id])
+  UserOwnerId Int
+}
+
+model Messages {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content     String?
+  files       Bytes?
+  contentType String?
+
+  sender   Users @relation(fields: [senderId], references: [id], name: "MessagesSended")
+  senderId Int
+
+  receiver   Users @relation(fields: [receiverId], references: [id], name: "MessagesReceived")
+  receiverId Int
+}
+
+model NotificationsType {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  priority    Int
+  color       String?
+  template    String
+  description String?
+  userType    String?
+
+  model     String
+  operation String
+  args      String
+
+  NotificationsSettings NotificationsSettings[]
+  Notifications         Notifications[]
+
+  @@index([model])
+  @@index([operation])
+  @@index([args])
+}
+
+model Historiques {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  model     String
+  operation String
+  args      String
+
+  userAuthor   Users @relation(fields: [userAuthorId], references: [id])
+  userAuthorId Int
+
+  @@index([model])
+  @@index([operation])
+  @@index([args])
+}
+
+model Notifications {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notificationType    NotificationsType @relation(fields: [notificationsTypeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  notificationsTypeId Int
+
+  user    Users @relation(fields: [usersId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  usersId Int
+
+  htmlValue String
+}
+
+model NotificationsSettings {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    Users @relation(fields: [usersId], references: [id])
+  usersId Int
+
+  notificationType NotificationsType @relation(fields: [notificationsId], references: [id])
+  notificationsId  Int
+
+  isSubscribebyEmail Boolean? @default(false)
+  isSubscribe        Boolean? @default(false)
+
+  @@unique([usersId, notificationsId])
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Files     Files[]
+  size      Int
+
+  FolderParent   Folder?  @relation(fields: [FolderParentId], references: [id], name: "FolderChildren", onDelete: Cascade, onUpdate: Cascade)
+  FolderParentId Int?
+  FolderChildren Folder[] @relation("FolderChildren")
+  UserOwner      Users    @relation(fields: [UserOwnerId], references: [id])
+  UserOwnerId    Int
+}
+
+model Files {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type    String
+  name    String
+  size    Int
+  content Bytes
+  meta    String
+
+  FolderParent Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  folderId     Int?
+
+  UserOwner   Users @relation(fields: [UserOwnerId], references: [id])
+  UserOwnerId Int
+}

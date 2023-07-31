@@ -1,0 +1,31 @@
+{
+    "name":"test",
+    "run":[
+        {"let nom":"'rolio'"},
+        {"let prenom":"rabe"},
+        {"let nomComplete":"nom+prenom"},
+        {"if":{
+         "condition":"nom==='rolio'",
+         "run":[
+
+         ],
+         "else if":[
+
+         ],
+         "else":[
+
+         ]
+        }},
+        {"for":{
+            "let":{
+                "a":5
+            },
+            "condition":"a<50",
+
+            "run":[
+
+            ]
+
+        }}
+    ]
+}
