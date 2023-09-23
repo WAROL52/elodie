@@ -5,6 +5,7 @@ import { Emails, Prisma, Users } from "@prisma/client"
 import { UserArgs } from "@prisma/client/runtime/library"
 import { NextAuthOptions, Session, getServerSession } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { RedirectType } from "next/dist/client/components/redirect"
 import { redirect } from "next/navigation"
 // (cmd $) openssl rand -base64 32
 // (.env) NEXTAUTH_SECRET
@@ -83,3 +84,4 @@ export async function getAuthServerSide<T extends true | false = false, K extend
     email, user, session
   }
 }
+export type UserAuth=Users

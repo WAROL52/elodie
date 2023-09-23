@@ -46,7 +46,7 @@ export function TodoItem({ todo }: Props) {
             className="form-check-label"
             htmlFor={"flexSwitchCheckDefault-" + todo.id}
           >
-            {todo.title} {String(todo.completed)}
+            {todo.title}
           </label>
         </div>
       </li>

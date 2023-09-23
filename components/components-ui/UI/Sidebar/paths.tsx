@@ -51,16 +51,6 @@ export const pathsMenuCompte: PathType[] = [
     url: "/profile",
     icon: <IconProfile />,
   },
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: <IconNotifications />,
-  },
-  {
-    title: "Historiques",
-    url: "/historiques",
-    icon: <IconNotifications />,
-  },
 ].map((path) => ({
   ...path,
   url: PATHROOT + path.url,
